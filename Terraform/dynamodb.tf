@@ -1,23 +1,31 @@
-resource "aws_dynamodb_table" "basic-dynamodb-table" {
+resource "aws_dynamodb_table" "dynamodb-table" {
   name           = "Team-Oak-project-3"
   billing_mode   = "PROVISIONED"
   read_capacity  = 20
   write_capacity = 20
-  hash_key       = "team_oak"
-  range_key      = "website"
+  hash_key       = "name"
+  range_key      = "email"
 
   attribute {
-    name = "team_oak"
+    name = "name"
+    type = "S"
+  }
+
+  attribute {
+    name = "email"
     type = "S"
   }
 
   # attribute {
-  #   name = "website"
+  #   name = "location"
   #   type = "S"
   # }
-
   # attribute {
-  #   name = "TopScore"
+  #   name = "option"
+  #   type = "S"
+  # }
+  # attribute {
+  #   name = "phone"
   #   type = "N"
   # }
 
@@ -28,8 +36,8 @@ resource "aws_dynamodb_table" "basic-dynamodb-table" {
 
   # global_secondary_index {
   #   name               = "GameTitleIndex"
-  #   hash_key           = "GameTitle"
-  #   range_key          = "TopScore"
+  #   hash_key           = "name"
+  #   range_key          = "email"
   #   write_capacity     = 10
   #   read_capacity      = 10
   #   projection_type    = "INCLUDE"

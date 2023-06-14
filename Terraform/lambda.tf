@@ -12,55 +12,21 @@ data "aws_iam_policy_document" "assume_role" {
 }
 
 resource "aws_iam_role" "iam_for_lambda" {
-  name               = "OakLambda"
-
-  assume_role_policy = jsonencode({
-    Version   = "2012-10-17"
-    Statement = [
-      {
-        Action    = "sts:AssumeRole"
-        Effect    = "Allow"
-        Sid       = ""
-        Principal = {
-          Service = "lambda.amazonaws.com"
-        }
-      },
-    ]
-  })
+  name               = "lambda-dynamodb"
+  assume_role_policy = data.aws_iam_policy_document.assume_role.json
 }
 
-resource "aws_iam_policy_attachment" "lambda_policies" {
-  name       = "lambda-policies"
-  roles      = [aws_iam_role.iam_for_lambda.name]
-  policy_arn = "arn:aws:iam::aws:policy/AmazonRDSFullAccess"
+data "archive_file" "lambda" {
+  type        = "zip"
+  source_file = "lambda.py"
+  output_path = "lambda_function_payload.zip"
 }
 
-resource "aws_iam_policy_attachment" "vpc_policies" {
-  name       = "vpc-policies"
-  roles      = [aws_iam_role.iam_for_lambda.name]
-  policy_arn = "arn:aws:iam::aws:policy/AmazonVPCFullAccess"
-}
-
-resource "aws_iam_policy_attachment" "basic_execution_role" {
-  name       = "basic-execution-role"
-  roles      = [aws_iam_role.iam_for_lambda.name]
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-}
-
-resource "aws_iam_policy_attachment" "vpc_access_execution_role" {
-  name       = "vpc-access-execution-role"
-  roles      = [aws_iam_role.iam_for_lambda.name]
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
-}
-
-
-resource "aws_lambda_function" "Oak_Lambda" {
-  # If the file is not in the current working directory you will need to include a
-  # path.module in the filename.
+resource "aws_lambda_function" "test_lambda" {
   filename      = "lambda_function_payload.zip"
-  function_name = "${var.default_tags.env}-lambda"
+  function_name = "Team-oak-project3"
   role          = aws_iam_role.iam_for_lambda.arn
-  handler       = "python.zip"
+  handler       = "lambda.lambda_handler"
 
   source_code_hash = data.archive_file.lambda.output_base64sha256
 
@@ -71,4 +37,10 @@ resource "aws_lambda_function" "Oak_Lambda" {
       foo = "bar"
     }
   }
+}
+
+resource "aws_iam_policy_attachment" "lambda_rds_attachment" {
+  name       = "lambda_rds_attachment"
+  roles      = [aws_iam_role.iam_for_lambda.name]
+  policy_arn = "arn:aws:iam::176906365059:policy/LambdaRDS"
 }

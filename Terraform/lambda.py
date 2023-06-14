@@ -6,21 +6,25 @@ dynamodb = boto3.resource('dynamodb')
 
 def lambda_handler(event, context):
     try:
-        table = dynamodb.Table('Team-Oak')
+        table = dynamodb.Table('Team-Oak-project-3')
         
         name = event['name']
         email = event['email']
         location = event['location']
-        phone = event['phone']
+        option = event['option']  # Updated key name
+        experience = event['experience']
         education = event['education']
+        phone = event['phone']
         
         response = table.put_item(
             Item={
-                'name': "name",
-                'email': "email",
-                'location': "location",
-                'phone': "phone",
-                'education': "education"
+                'name': name,
+                'email': email,
+                'location': location,
+                'option': option,
+                'experience': experience,
+                'education': education,
+                'phone': phone
             }
         )
         
