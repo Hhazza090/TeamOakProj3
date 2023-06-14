@@ -98,3 +98,12 @@ select {
   padding: 8px;
   font-size: 15px;
 }
+#home {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #333;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 5px;
+  margin-top: 20px;
+}
